@@ -161,6 +161,9 @@ object TaskStorage {
         persistTask(task.toDTO(), task.isEnabled)
     }
 
+    /**
+     * 加载所有任务
+     */
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun loadAllTasks() {
         if (!storageDir.isDirectory) return

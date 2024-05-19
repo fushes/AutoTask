@@ -80,6 +80,7 @@ class MainViewModel : ViewModel(), ServiceController.ServiceStateListener {
     var showUpdateDialog = true
 
     val requestShareFile = MutableLiveData<File>()
+    val requestUploadFile = MutableLiveData<String>()
 
     val requestImportTask = MutableLiveData<Intent>()
 

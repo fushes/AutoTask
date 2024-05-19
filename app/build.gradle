@@ -9,18 +9,18 @@ plugins {
 
 android {
     signingConfigs {
-        xjunz {
-            def localProperties = new Properties()
-            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
-            if (localProperties != null) {
-                storeFile file(localProperties['storeFile'])
-                storePassword localProperties['storePassword']
-                keyAlias localProperties['keyAlias']
-                keyPassword localProperties['keyPassword']
-            }
-        }
+//        xjunz {
+//            def localProperties = new Properties()
+//            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+//            if (localProperties != null) {
+//                storeFile file(localProperties['storeFile'])
+//                storePassword localProperties['storePassword']
+//                keyAlias localProperties['keyAlias']
+//                keyPassword localProperties['keyPassword']
+//            }
+//        }
     }
-    compileSdk compile_sdk_version
+    compileSdkVersion compile_sdk_version
 
     defaultConfig {
         applicationId "top.xjunz.tasker"
@@ -42,12 +42,12 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.xjunz
+//            signingConfig signingConfigs.xjunz
         }
         debug {
             debuggable true
             minifyEnabled false
-            signingConfig signingConfigs.xjunz
+//            signingConfig signingConfigs.xjunz
         }
     }
     buildFeatures {
@@ -55,14 +55,16 @@ android {
         aidl true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_18
-        targetCompatibility JavaVersion.VERSION_18
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     namespace 'top.xjunz.tasker'
     lint {
         disable 'NullSafeMutableLiveData'
     }
+    buildToolsVersion '33.0.1'
+    ndkVersion '25.1.8937393'
 }
 
 dependencies {
@@ -75,6 +77,11 @@ dependencies {
     def appCenterSdkVersion = '5.0.2'
     implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
     implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+    implementation 'cn.hutool:hutool-all:5.7.16' // 替换为最新的版本
+    //MQTT
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+
 
     // shizuku
     implementation "dev.rikka.shizuku:api:$shizuku_version"

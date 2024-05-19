@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import cn.hutool.core.io.FileUtil
 import com.google.android.material.transition.platform.MaterialFadeThrough
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import top.xjunz.tasker.BuildConfig
@@ -37,6 +38,7 @@ import top.xjunz.tasker.ui.main.ScrollTarget
 import top.xjunz.tasker.util.ClickListenerUtil.setNoDoubleClickListener
 import top.xjunz.tasker.util.formatTime
 import java.io.File
+import java.nio.charset.Charset
 import java.util.*
 
 /**
@@ -94,6 +96,12 @@ abstract class BaseTaskShowcaseFragment : BaseFragment<FragmentTaskShowcaseBindi
                 )
                 origin.copyRecursively(target, true)
                 mvm.requestShareFile.value = target
+            }
+            binding.ibUpload.setNoDoubleClickListener {
+                val task = taskList[adapterPosition]
+                val origin = task.fileOnStorage
+                val readString = FileUtil.readString(origin, Charset.defaultCharset())
+                mvm.requestUploadFile.value = readString;
             }
         }
     }

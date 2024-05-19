@@ -22,7 +22,6 @@ import androidx.lifecycle.withStarted
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -36,6 +35,7 @@ import top.xjunz.tasker.engine.applet.util.hierarchy
 import top.xjunz.tasker.engine.dto.XTaskDTO
 import top.xjunz.tasker.engine.task.XTask
 import top.xjunz.tasker.ktx.*
+import top.xjunz.tasker.mqtt.MyMqttService
 import top.xjunz.tasker.premium.PremiumMixin
 import top.xjunz.tasker.service.floatingInspector
 import top.xjunz.tasker.service.isPremium
@@ -61,6 +61,7 @@ import java.util.*
 import java.util.concurrent.TimeoutException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+
 
 /**
  * @author xjunz 2021/6/20 21:05
@@ -143,6 +144,8 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
         if (intent.action == Intent.ACTION_VIEW && intent.scheme == "content") {
             mainViewModel.requestImportTask.value = intent
         }
+        val myMqttService = Intent(this@MainActivity, MyMqttService::class.java)
+        startService(myMqttService)
         GlobalCrashHandler.init()
     }
 
@@ -294,21 +297,22 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
                 binding.tvTitle.setDrawableEnd(null)
             }
         }
-        observe(app.updateInfo) {
-            if (it.hasUpdates() && mainViewModel.showUpdateDialog) {
-                MaterialAlertDialogBuilder(this).setTitle(R.string.has_updates)
-                    .setMessage(it.formatToString())
-                    .setOnDismissListener {
-                        mainViewModel.showUpdateDialog = false
-                    }
-                    .setOnCancelListener {
-                        mainViewModel.showUpdateDialog = false
-                    }
-                    .setPositiveButton(R.string.download) { _, _ ->
-                        viewUrlSafely("https://spark.appc02.com/tasker")
-                    }.setNegativeButton(android.R.string.cancel, null).show()
-            }
-        }
+//        observe(app.updateInfo) {
+//            if (it.hasUpdates() && mainViewModel.showUpdateDialog) {
+//                MaterialAlertDialogBuilder(this).setTitle(R.string.has_updates)
+//                    .setMessage(it.formatToString())
+//                    .setOnDismissListener {
+//                        mainViewModel.showUpdateDialog = false
+//                    }
+//                    .setOnCancelListener {
+//                        mainViewModel.showUpdateDialog = false
+//                    }
+//                    .setPositiveButton(R.string.download) { _, _ ->
+//                        viewUrlSafely("https://spark.appc02.com/tasker")
+//                    }.setNegativeButton(android.R.string.cancel, null).show()
+//            }
+//        }
+        //分享任务
         observeTransient(mainViewModel.requestShareFile) {
             currentOperatingFile = it
             fileShareLauncher.launch(
@@ -321,6 +325,10 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
                     R.string.share_this_task.str
                 )
             )
+        }
+        //分享任务
+        observeTransient(mainViewModel.requestUploadFile) {
+        //    mqttService.publishMessage("android-topic/out",it)
         }
         observeTransient(mainViewModel.requestImportTask) {
             handleImportTask(it)
