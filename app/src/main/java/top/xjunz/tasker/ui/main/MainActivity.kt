@@ -35,10 +35,11 @@ import top.xjunz.tasker.engine.applet.util.hierarchy
 import top.xjunz.tasker.engine.dto.XTaskDTO
 import top.xjunz.tasker.engine.task.XTask
 import top.xjunz.tasker.ktx.*
-import top.xjunz.tasker.mqtt.MyMqttService
+import top.xjunz.tasker.service.MyMqttService
 import top.xjunz.tasker.premium.PremiumMixin
 import top.xjunz.tasker.service.floatingInspector
 import top.xjunz.tasker.service.isPremium
+import top.xjunz.tasker.service.myMqttService
 import top.xjunz.tasker.service.serviceController
 import top.xjunz.tasker.task.applet.option.AppletOptionFactory
 import top.xjunz.tasker.task.inspector.InspectorMode
@@ -328,7 +329,7 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
         }
         //分享任务
         observeTransient(mainViewModel.requestUploadFile) {
-        //    mqttService.publishMessage("android-topic/out",it)
+            myMqttService.publishMessage("android-topic/out",it)
         }
         observeTransient(mainViewModel.requestImportTask) {
             handleImportTask(it)

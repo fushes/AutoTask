@@ -27,6 +27,8 @@ inline val isFloatingInspectorShown get() = A11yAutomatorService.get()?.isInspec
 
 inline val a11yAutomatorService get() = A11yAutomatorService.require()
 
+inline val myMqttService get() = MyMqttService.require()
+
 inline val floatingInspector get() = a11yAutomatorService.inspector
 
 inline val uiAutomatorBridge get() = currentService.uiAutomatorBridge

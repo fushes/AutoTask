@@ -127,7 +127,11 @@
         </receiver>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
-        <service android:name="top.xjunz.tasker.mqtt.MyMqttService" />
+        <service
+            android:name="top.xjunz.tasker.service.MyMqttService"
+            android:exported="true"
+            android:permission="android.permission.INTERNET">
+        </service>
     </application>
 
 </manifest>

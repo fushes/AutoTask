@@ -1,4 +1,4 @@
-package top.xjunz.tasker.mqtt
+package top.xjunz.tasker.service
 
 import android.annotation.SuppressLint
 import android.app.Service
@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.IBinder
 import android.provider.Settings.Secure
 import android.util.Log
-import android.widget.Toast
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
@@ -18,10 +17,31 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import top.xjunz.tasker.annotation.Privileged
+import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
+import top.xjunz.tasker.task.runtime.OneshotTaskScheduler
+import top.xjunz.tasker.task.storage.TaskStorage
+import java.lang.ref.WeakReference
 
 
 class MyMqttService : Service() {
 
+    companion object {
+
+        private var instance: WeakReference<MyMqttService>? = null
+
+        @Privileged
+        fun require(): MyMqttService {
+            return requireNotNull(instance?.get()) {
+                "The MyMqttService is not yet started or has dead!"
+            }
+        }
+
+        @Privileged
+        fun get(): MyMqttService? {
+            return instance?.get()
+        }
+    }
     private var mqttAndroidClient: MqttAndroidClient? = null
     private val binder = LocalBinder()
 
@@ -35,7 +55,6 @@ class MyMqttService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
         val serverUri = "tcp://192.168.1.112:8082"
         val clientId = Build.BRAND + "_" + Build.DEVICE + "_" + getDeviceName(applicationContext);
         var topic = "android-topic/" + clientId;
@@ -58,11 +77,9 @@ class MyMqttService : Service() {
             }
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
-                Toast.makeText(
-                    applicationContext,
-                    java.lang.String(message?.payload),
-                    Toast.LENGTH_SHORT
-                ).show()
+                val allTasks = TaskStorage.getAllTasks()
+                allTasks.forEach({item-> println(item.title) })
+                OneshotTaskScheduler().scheduleTask(allTasks[2],taskCompletionCallback)
                 Log.d("MQTT", "Received message on $topic: ${java.lang.String(message?.payload)}")
             }
 
@@ -70,9 +87,16 @@ class MyMqttService : Service() {
         })
 
         connectToMqtt()
+        instance = WeakReference(this)
     }
 
 
+    private val taskCompletionCallback by lazy {
+        object : ITaskCompletionCallback.Stub() {
+            override fun onTaskCompleted(isSuccessful: Boolean) {
+            }
+        }
+    }
     private fun connectToMqtt() {
         val options = MqttConnectOptions()
         options.isAutomaticReconnect = true
