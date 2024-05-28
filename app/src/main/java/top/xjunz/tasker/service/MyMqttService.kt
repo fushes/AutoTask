@@ -16,8 +16,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import top.xjunz.tasker.annotation.Privileged
+import top.xjunz.tasker.service.controller.ShizukuAutomatorServiceController
 import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
-import top.xjunz.tasker.task.runtime.OneshotTaskScheduler
 import top.xjunz.tasker.task.storage.MqttConfigStorage
 import top.xjunz.tasker.task.storage.TaskStorage
 import java.lang.ref.WeakReference
@@ -89,8 +89,11 @@ class MyMqttService : Service() {
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 val allTasks = TaskStorage.getAllTasks()
-                allTasks.forEach({ item -> println(item.title) })
-                OneshotTaskScheduler().scheduleTask(allTasks[2], taskCompletionCallback)
+                val msg = java.lang.String(message?.payload)
+                allTasks.forEach({ item -> println(item.title + "----" + item.metadata.identifier) })
+                val get = allTasks.stream().filter({ item -> msg.equals(item.metadata.identifier) })
+                    .findFirst().get()
+                ShizukuAutomatorServiceController.remoteService?.scheduleOneshotTask(get.checksum, taskCompletionCallback)
                 Log.d("MQTT", "Received message on $topic: ${java.lang.String(message?.payload)}")
             }
 

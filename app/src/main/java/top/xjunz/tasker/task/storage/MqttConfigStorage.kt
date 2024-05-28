@@ -50,7 +50,7 @@ class MqttConfigStorage {
                 Charset.defaultCharset()
             )
             val jsonObject = JSONObject(str)
-            var config = Config();
+            val config = Config();
             config.serverUri = jsonObject["serverUri"].toString()
             config.clientId = jsonObject["clientId"].toString()
             config.topic = CollUtil.newHashSet(jsonObject["topic"].toString().split(","))
