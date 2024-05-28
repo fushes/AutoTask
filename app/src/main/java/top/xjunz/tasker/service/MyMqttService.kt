@@ -1,14 +1,12 @@
 package top.xjunz.tasker.service
 
-import android.annotation.SuppressLint
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
-import android.provider.Settings.Secure
 import android.util.Log
+import cn.hutool.core.collection.CollUtil
+import cn.hutool.core.util.StrUtil
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
@@ -20,11 +18,13 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import top.xjunz.tasker.annotation.Privileged
 import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
 import top.xjunz.tasker.task.runtime.OneshotTaskScheduler
+import top.xjunz.tasker.task.storage.MqttConfigStorage
 import top.xjunz.tasker.task.storage.TaskStorage
 import java.lang.ref.WeakReference
 
 
 class MyMqttService : Service() {
+    val config = MqttConfigStorage.getConfig()
 
     companion object {
 
@@ -42,6 +42,7 @@ class MyMqttService : Service() {
             return instance?.get()
         }
     }
+
     private var mqttAndroidClient: MqttAndroidClient? = null
     private val binder = LocalBinder()
 
@@ -55,20 +56,30 @@ class MyMqttService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val serverUri = "tcp://192.168.1.112:8082"
-        val clientId = Build.BRAND + "_" + Build.DEVICE + "_" + getDeviceName(applicationContext);
-        var topic = "android-topic/" + clientId;
+        if (StrUtil.isEmpty(config.serverUri) || StrUtil.isEmpty(config.clientId) || CollUtil.isEmpty(
+                config.topic
+            )
+        ) {
+            Log.e("MQTT", "MQTT not config")
+            return
+        }
         mqttAndroidClient =
-            MqttAndroidClient(this, serverUri, clientId, MqttAndroidClient.Ack.AUTO_ACK)
+            MqttAndroidClient(
+                this,
+                config.serverUri,
+                config.clientId,
+                MqttAndroidClient.Ack.AUTO_ACK
+            )
 
         mqttAndroidClient?.setCallback(object : MqttCallbackExtended {
             override fun connectComplete(reconnect: Boolean, serverURI: String?) {
                 if (reconnect) {
                     Log.d("MQTT", "Reconnected to $serverURI")
-                    subscribeToTopic(topic)
+                    config.topic?.forEach { item -> subscribeToTopic(item) }
+
                 } else {
                     Log.d("MQTT", "Connected to $serverURI")
-                    subscribeToTopic(topic)
+                    config.topic?.forEach { item -> subscribeToTopic(item) }
                 }
             }
 
@@ -78,8 +89,8 @@ class MyMqttService : Service() {
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 val allTasks = TaskStorage.getAllTasks()
-                allTasks.forEach({item-> println(item.title) })
-                OneshotTaskScheduler().scheduleTask(allTasks[2],taskCompletionCallback)
+                allTasks.forEach({ item -> println(item.title) })
+                OneshotTaskScheduler().scheduleTask(allTasks[2], taskCompletionCallback)
                 Log.d("MQTT", "Received message on $topic: ${java.lang.String(message?.payload)}")
             }
 
@@ -97,13 +108,13 @@ class MyMqttService : Service() {
             }
         }
     }
+
     private fun connectToMqtt() {
         val options = MqttConnectOptions()
         options.isAutomaticReconnect = true
         options.isCleanSession = true
-        options.userName = "mqtt"
-        options.password = "2e51bf05564158d7eff6d5f0b9fcbb5f".toCharArray();
-
+        options.userName = config.userName
+        options.password = config.password.toCharArray();
         try {
             mqttAndroidClient?.connect(options, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
@@ -118,12 +129,6 @@ class MyMqttService : Service() {
         } catch (e: MqttException) {
             e.printStackTrace()
         }
-    }
-
-    @SuppressLint("HardwareIds")
-    fun getDeviceName(context: Context): String {
-        val deviceName = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
-        return deviceName
     }
 
     private fun subscribeToTopic(topic: String) {
