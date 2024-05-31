@@ -11,6 +11,7 @@ import top.xjunz.tasker.engine.task.TaskSnapshot
 import top.xjunz.tasker.engine.task.XTask
 import top.xjunz.tasker.task.applet.option.AppletOptionFactory
 
+
 /**
  * @author xjunz 2022/12/25
  */
@@ -20,6 +21,10 @@ object PrivilegedTaskManager : TaskManager<Long, XTaskDTO>() {
     object Delegate : IRemoteTaskManager.Stub() {
 
         private var initialized = false
+
+        var senDataListenerList: MutableList<IOnDataSendListener> =
+            ArrayList()
+
 
         override fun initialize(carriers: MutableList<XTaskDTO>) {
             carriers.forEach {
@@ -67,6 +72,12 @@ object PrivilegedTaskManager : TaskManager<Long, XTaskDTO>() {
                     listener.onTaskPauseStateChanged(checksum)
                 }
             )
+        }
+
+        override fun setOnDataSendListener(listener: IOnDataSendListener?) {
+            if (listener != null) {
+                senDataListenerList.add(listener)
+            }
         }
 
         override fun getTaskPauseInfo(identifier: Long): LongArray {

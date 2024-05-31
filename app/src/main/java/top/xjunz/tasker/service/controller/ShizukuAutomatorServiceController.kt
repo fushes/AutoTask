@@ -20,7 +20,9 @@ import top.xjunz.tasker.engine.dto.toDTO
 import top.xjunz.tasker.ktx.whenAlive
 import top.xjunz.tasker.premium.PremiumMixin
 import top.xjunz.tasker.service.IRemoteAutomatorService
+import top.xjunz.tasker.service.MyMqttService
 import top.xjunz.tasker.service.ShizukuAutomatorService
+import top.xjunz.tasker.task.runtime.IOnDataSendListener
 import top.xjunz.tasker.task.runtime.LocalTaskManager
 
 
@@ -75,8 +77,18 @@ object ShizukuAutomatorServiceController : ShizukuServiceController<ShizukuAutom
         }
     }
 
+    private val iOnDataSendListener: IOnDataSendListener = object : IOnDataSendListener.Stub() {
+        override fun onSendData(data: String) {
+            MyMqttService.get()?.publishMessage("android-topic", data)
+        }
+    }
+
+
     private fun doFinally(remote: IRemoteAutomatorService) {
         val rtm = remote.taskManager
+        if (MyMqttService.get() != null) {
+            rtm.setOnDataSendListener(iOnDataSendListener)
+        }
         LocalTaskManager.setRemotePeer(rtm)
         if (!rtm.isInitialized) {
             rtm.initialize(LocalTaskManager.getEnabledResidentTasks().map { it.toDTO() })

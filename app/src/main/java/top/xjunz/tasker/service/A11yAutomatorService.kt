@@ -41,6 +41,8 @@ import top.xjunz.tasker.task.event.MetaEventDispatcher
 import top.xjunz.tasker.task.inspector.FloatingInspector
 import top.xjunz.tasker.task.inspector.InspectorMode
 import top.xjunz.tasker.task.inspector.InspectorViewModel
+import top.xjunz.tasker.task.runtime.IOnDataSendListener
+import top.xjunz.tasker.task.runtime.IRemoteTaskManager
 import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
 import top.xjunz.tasker.task.runtime.LocalTaskManager
 import top.xjunz.tasker.task.runtime.OneshotTaskScheduler
@@ -292,6 +294,14 @@ class A11yAutomatorService : AccessibilityService(), AutomatorService, IUiAutoma
 
     override fun getStartTimestamp(): Long {
         return startTimestamp
+    }
+
+    override fun getTaskManager(): IRemoteTaskManager {
+        TODO("Not yet implemented")
+    }
+
+    override fun getSendDataListener(): IOnDataSendListener? {
+        TODO("Not yet implemented")
     }
 
     override fun setRotation(rotation: Int): Boolean {

@@ -364,6 +364,7 @@
     <string name="executing">执行中</string>
     <string name="format_make_toast">弹出%s</string>
     <string name="msg_to_toast">要显示的文本</string>
+    <string name="msg_to_upload">要上传的文本</string>
     <string name="error_unspecified">此项未指定</string>
     <string name="tip_vararg_text">*所有项将会拼接成为一段文本</string>
     <string name="name_of_app_entered">进入的应用名称</string>
@@ -433,6 +434,7 @@
 \n<b>最多等待时长</b>：如果等待超过该时长仍然未检测到屏幕空闲，那么视为失败。</string>
     <string name="format_wait_for_idle_desc">空闲门槛：%s，最多等待时长：%s</string>
     <string name="displayed_text">显示的文本</string>
+    <string name="uploaded_text">上传的文本</string>
     <string name="format_tip_selecting_referents">使用%s标注的引用项代表它已被设置标识，<b>长按</b>它可修改其标识。</string>
     <string name="highlight_color">强调色</string>
     <string name="format_set_referent_name">为\"%s\"设置标识</string>
@@ -620,6 +622,7 @@
     <string name="format_second">%d秒</string>
     <string name="error_input_not_in_range">输入的值不在范围内</string>
     <string name="make_toast">弹出文本提示</string>
+    <string name="upload_text">上传文本</string>
     <string name="source_file_path">源文件路径</string>
     <string name="copy_destination_file_path">目标文件路径（源文件会被拷贝到此处）</string>
     <string name="destination_file_path">目标文件路径</string>

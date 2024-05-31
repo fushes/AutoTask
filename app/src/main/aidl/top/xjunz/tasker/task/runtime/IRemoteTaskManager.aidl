@@ -1,6 +1,7 @@
 // IRemoteTaskManager.aidl
 package top.xjunz.tasker.task.runtime;
 
+import top.xjunz.tasker.task.runtime.IOnDataSendListener;
 import top.xjunz.tasker.task.runtime.IOnTaskPauseStateListener;
 import top.xjunz.tasker.engine.dto.XTaskDTO;
 import top.xjunz.tasker.engine.task.TaskSnapshot;
@@ -28,6 +29,8 @@ interface IRemoteTaskManager {
     TaskSnapshot[] getAllSnapshots(long identifier);
 
     void setOnTaskPausedListener(in IOnTaskPauseStateListener listener);
+
+    void setOnDataSendListener(in IOnDataSendListener listener);
 
     long[] getTaskPauseInfo(long identifier);
 }

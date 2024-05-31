@@ -15,6 +15,7 @@ import android.system.Os
 import android.view.accessibility.AccessibilityEvent
 import androidx.annotation.Keep
 import androidx.core.os.bundleOf
+import cn.hutool.core.collection.CollUtil
 import top.xjunz.shared.ktx.casted
 import top.xjunz.shared.trace.logcat
 import top.xjunz.shared.trace.logcatStackTrace
@@ -134,6 +135,14 @@ class ShizukuAutomatorService : IRemoteAutomatorService.Stub, AutomatorService {
     override fun getTaskManager(): IRemoteTaskManager {
         return PrivilegedTaskManager.Delegate
     }
+
+    override fun getSendDataListener(): IOnDataSendListener? {
+        if (!CollUtil.isEmpty(PrivilegedTaskManager.Delegate.senDataListenerList)) {
+            return PrivilegedTaskManager.Delegate.senDataListenerList.last()
+        }
+        return null
+    }
+
 
     /**
      * A decompiled code snippet from `TakoStats`. **Praise Rikka**!

@@ -61,10 +61,25 @@ class TextActionRegistry(id: Int) : AppletOptionRegistry(id) {
     val makeToast = appletOption(R.string.make_toast) {
         optimisticVarRefAction<String> { value, refs, _ ->
             val text = value.format(*refs)
-            currentService.overlayToastBridge.showOverlayToast(text)
+            currentService.overlayToastBridge.showOverlayToast("1235")
         }
     }.withValueArgument<String>(R.string.msg_to_toast, VariantArgType.TEXT_FORMAT)
         .withResult<String>(R.string.displayed_text)
+        .withSingleValueAppletDescriber<String> { applet, t ->
+            val bolds = applet.references.values.map {
+                ("\${$it}").foreColored()
+            }.toTypedArray()
+            t?.formatSpans(*bolds)
+        }
+
+    @AppletOrdinal(0x0004)
+    val sendData = appletOption(R.string.upload_text) {
+        optimisticVarRefAction<String> { value, refs, _ ->
+            val text = value.format(*refs)
+            currentService.getSendDataListener()?.onSendData(text)
+        }
+    }.withValueArgument<String>(R.string.msg_to_upload, VariantArgType.TEXT_FORMAT)
+        .withResult<String>(R.string.uploaded_text)
         .withSingleValueAppletDescriber<String> { applet, t ->
             val bolds = applet.references.values.map {
                 ("\${$it}").foreColored()

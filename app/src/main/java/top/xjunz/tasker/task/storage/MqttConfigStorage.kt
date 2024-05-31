@@ -45,6 +45,7 @@ class MqttConfigStorage {
         }
 
         fun getConfig(): Config {
+            init(app)
             val str: String = FileUtil.readString(
                 configPath,
                 Charset.defaultCharset()

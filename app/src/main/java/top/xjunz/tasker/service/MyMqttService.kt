@@ -16,6 +16,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import top.xjunz.tasker.annotation.Privileged
+import top.xjunz.tasker.engine.dto.toDTO
 import top.xjunz.tasker.service.controller.ShizukuAutomatorServiceController
 import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
 import top.xjunz.tasker.task.storage.MqttConfigStorage
@@ -76,10 +77,11 @@ class MyMqttService : Service() {
                 if (reconnect) {
                     Log.d("MQTT", "Reconnected to $serverURI")
                     config.topic?.forEach { item -> subscribeToTopic(item) }
-
+                    serviceController.bindService()
                 } else {
                     Log.d("MQTT", "Connected to $serverURI")
                     config.topic?.forEach { item -> subscribeToTopic(item) }
+                    serviceController.bindService()
                 }
             }
 
@@ -93,6 +95,7 @@ class MyMqttService : Service() {
                 allTasks.forEach({ item -> println(item.title + "----" + item.metadata.identifier) })
                 val get = allTasks.stream().filter({ item -> msg.equals(item.metadata.identifier) })
                     .findFirst().get()
+                ShizukuAutomatorServiceController.remoteService?.taskManager?.addOneshotTaskIfAbsent(get.toDTO())
                 ShizukuAutomatorServiceController.remoteService?.scheduleOneshotTask(get.checksum, taskCompletionCallback)
                 Log.d("MQTT", "Received message on $topic: ${java.lang.String(message?.payload)}")
             }

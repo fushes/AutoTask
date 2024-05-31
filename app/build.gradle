@@ -8,8 +8,8 @@ plugins {
 }
 
 android {
-    signingConfigs {
-//        xjunz {
+//    signingConfigs {
+//        "app-debug" {
 //            def localProperties = new Properties()
 //            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 //            if (localProperties != null) {
@@ -19,15 +19,15 @@ android {
 //                keyPassword localProperties['keyPassword']
 //            }
 //        }
-    }
-    compileSdkVersion compile_sdk_version
+//    }
+    compileSdk compile_sdk_version
 
     defaultConfig {
         applicationId "top.xjunz.tasker"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 17
-        versionName "1.1.3r04"
+        versionCode 29
+        versionName "1.1.5"
         if (gradle.startParameter.taskNames.any { it.toLowerCase().contains("debug") }) {
             versionName += "-debug"
         }
@@ -42,12 +42,12 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.xjunz
+//            signingConfig signingConfigs.m
         }
         debug {
             debuggable true
             minifyEnabled false
-//            signingConfig signingConfigs.xjunz
+//            signingConfig signingConfigs.m
         }
     }
     buildFeatures {
@@ -55,8 +55,8 @@ android {
         aidl true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_18
+        targetCompatibility JavaVersion.VERSION_18
     }
 
     namespace 'top.xjunz.tasker'

@@ -17,6 +17,8 @@ import top.xjunz.tasker.task.event.A11yEventDispatcher
 import top.xjunz.tasker.task.event.MetaEventDispatcher
 import top.xjunz.tasker.task.event.NetworkEventDispatcher
 import top.xjunz.tasker.task.event.PollEventDispatcher
+import top.xjunz.tasker.task.runtime.IOnDataSendListener
+import top.xjunz.tasker.task.runtime.IRemoteTaskManager
 import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
 import top.xjunz.tasker.task.runtime.OneshotTaskScheduler
 import top.xjunz.tasker.task.runtime.ResidentTaskScheduler
@@ -91,5 +93,9 @@ interface AutomatorService {
     }
 
     fun getStartTimestamp(): Long
+
+    fun getTaskManager(): IRemoteTaskManager
+
+    fun getSendDataListener(): IOnDataSendListener?
 
 }
