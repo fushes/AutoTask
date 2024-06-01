@@ -219,6 +219,8 @@ class ShizukuAutomatorService : IRemoteAutomatorService.Stub, AutomatorService {
             uiAutomation.serviceInfo = uiAutomation.serviceInfo.apply {
                 eventTypes = AccessibilityEvent.TYPES_ALL_MASK
                 flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+                        AccessibilityServiceInfo.DEFAULT or
+                        AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
                         AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS and
                         AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS.inv()
             }

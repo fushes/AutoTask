@@ -114,6 +114,7 @@ class UiObjectActionRegistry(id: Int) : AppletOptionRegistry(id) {
         GetUiObjectIfExists()
     }.withScopeRegistryId(BootstrapOptionRegistry.ID_UI_OBJECT_CRITERION_REGISTRY)
         .withUiObjectResults()
+        .hasCompositeTitle()
 
     @AppletOrdinal(0x0101)
     val click = simpleUiObjectActionOption(R.string.format_perform_click) {
@@ -275,11 +276,11 @@ class UiObjectActionRegistry(id: Int) : AppletOptionRegistry(id) {
     val getChildTextAt = appletOption(R.string.format_get_all_child_text_at) {
         createProcessor { args, runtime ->
             val node = args[0] as? AccessibilityNodeInfo
-            var text = ""
+            val data = StringBuilder()
             if (node != null) {
-                text += getAllChildText(node)
+                getAllChildText(node, data)
             }
-            text
+            data.toString()
         }
     }.withRefArgument<AccessibilityNodeInfo>(R.string.parent_node, R.string.certain_ui_object)
         .withResult<String>(R.string.ui_object_text)

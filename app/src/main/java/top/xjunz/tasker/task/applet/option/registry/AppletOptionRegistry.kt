@@ -99,21 +99,13 @@ abstract class AppletOptionRegistry(val id: Int) {
         return allOptions.firstOrNull { it.appletId == id }
     }
 
-    fun getAllChildText(node: AccessibilityNodeInfo): String {
-        if (node.childCount == 0) {
-            if (node.text == null) {
-                return ""
-            }
-            return node.text.toString()
-        }
-        var text = ""
-        if (node.text != null) {
-            text = node.text.toString()
-        }
+    fun getAllChildText(node: AccessibilityNodeInfo, data: StringBuilder) {
         for (i in 0 until node.childCount) {
-            text += getAllChildText(node.getChild(i))
+            if (null != node.getChild(i).text) {
+                data.append("|" + node.getChild(i).text.toString())
+            }
+            getAllChildText(node.getChild(i), data)
         }
-        return text
     }
 
 }
