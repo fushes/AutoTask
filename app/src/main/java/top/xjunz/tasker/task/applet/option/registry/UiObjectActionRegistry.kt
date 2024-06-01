@@ -25,6 +25,7 @@ import top.xjunz.tasker.task.applet.flow.ClickButtonWithText
 import top.xjunz.tasker.task.applet.flow.ClickUiObjectIfExists
 import top.xjunz.tasker.task.applet.flow.ClickUiObjectWithText
 import top.xjunz.tasker.task.applet.flow.ForEachUiScrollable
+import top.xjunz.tasker.task.applet.flow.GetUiObjectIfExists
 import top.xjunz.tasker.task.applet.flow.InputTextToFirstTextField
 import top.xjunz.tasker.task.applet.flow.ScrollIntoUiObject
 import top.xjunz.tasker.task.applet.flow.ref.UiObjectReferent
@@ -107,6 +108,12 @@ class UiObjectActionRegistry(id: Int) : AppletOptionRegistry(id) {
         InputTextToFirstTextField()
     }.withUnaryArgument<String>(R.string.text)
         .hasCompositeTitle()
+
+    @AppletOrdinal(0x0005)
+    val getIfExits = appletOption(R.string.get_if_exists) {
+        GetUiObjectIfExists()
+    }.withScopeRegistryId(BootstrapOptionRegistry.ID_UI_OBJECT_CRITERION_REGISTRY)
+        .withUiObjectResults()
 
     @AppletOrdinal(0x0101)
     val click = simpleUiObjectActionOption(R.string.format_perform_click) {
@@ -260,6 +267,21 @@ class UiObjectActionRegistry(id: Int) : AppletOptionRegistry(id) {
             R.string.format_number.formatSpans(it.toString().foreColored())
         }
         .withResult<AccessibilityNodeInfo>(R.string.child_node)
+        .withResult<String>(R.string.ui_object_text)
+        .hasCompositeTitle()
+
+
+    @AppletOrdinal(0x0149)
+    val getChildTextAt = appletOption(R.string.format_get_all_child_text_at) {
+        createProcessor { args, runtime ->
+            val node = args[0] as? AccessibilityNodeInfo
+            var text = ""
+            if (node != null) {
+                text += getAllChildText(node)
+            }
+            text
+        }
+    }.withRefArgument<AccessibilityNodeInfo>(R.string.parent_node, R.string.certain_ui_object)
         .withResult<String>(R.string.ui_object_text)
         .hasCompositeTitle()
 

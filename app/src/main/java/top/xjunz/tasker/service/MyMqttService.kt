@@ -102,9 +102,13 @@ class MyMqttService : Service() {
 
             override fun deliveryComplete(token: IMqttDeliveryToken?) {}
         })
+        try {
+            connectToMqtt()
+            instance = WeakReference(this)
+        }catch (e : Exception){
+            Log.e("MQTT", "client mqtt err")
 
-        connectToMqtt()
-        instance = WeakReference(this)
+        }
     }
 
 

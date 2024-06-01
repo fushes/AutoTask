@@ -567,6 +567,7 @@
     <string name="continue_current_loop">跳过此次循环</string>
     <string name="tip_continue_loop">仅跳过此次，循环将继续</string>
     <string name="format_get_child_at">获取%s的子控件</string>
+    <string name="format_get_all_child_text_at">获取所有子控件文本</string>
     <string name="format_number">第%d个</string>
     <string name="certain_ui_object">某个控件</string>
     <string name="which_one">第几个子控件</string>
@@ -593,6 +594,7 @@
     <string name="specified_time">指定时间</string>
     <string name="else_stopship">否则结束当前任务</string>
     <string name="click_if_exists">点击满足条件的控件</string>
+    <string name="get_if_exists">获取满足条件的控件</string>
     <string name="format_input_text_to_first_text_field">向第一个文本框中输入%s</string>
     <string name="is_paused">暂停中</string>
     <string name="format_pause_until">%s前暂停执行</string>

@@ -4,6 +4,7 @@
 
 package top.xjunz.tasker.task.applet.option.registry
 
+import android.view.accessibility.AccessibilityNodeInfo
 import top.xjunz.shared.utils.unsupportedOperation
 import top.xjunz.tasker.engine.applet.base.Applet
 import top.xjunz.tasker.ktx.clickable
@@ -97,4 +98,22 @@ abstract class AppletOptionRegistry(val id: Int) {
     fun findAppletOptionById(id: Int): AppletOption? {
         return allOptions.firstOrNull { it.appletId == id }
     }
+
+    fun getAllChildText(node: AccessibilityNodeInfo): String {
+        if (node.childCount == 0) {
+            if (node.text == null) {
+                return ""
+            }
+            return node.text.toString()
+        }
+        var text = ""
+        if (node.text != null) {
+            text = node.text.toString()
+        }
+        for (i in 0 until node.childCount) {
+            text += getAllChildText(node.getChild(i))
+        }
+        return text
+    }
+
 }
