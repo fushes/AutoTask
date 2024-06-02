@@ -4,6 +4,7 @@
 
 package top.xjunz.tasker.task.applet.option.registry
 
+import cn.hutool.json.JSONObject
 import top.xjunz.tasker.R
 import top.xjunz.tasker.bridge.ClipboardManagerBridge
 import top.xjunz.tasker.engine.applet.action.createProcessor
@@ -74,9 +75,12 @@ class TextActionRegistry(id: Int) : AppletOptionRegistry(id) {
 
     @AppletOrdinal(0x0004)
     val sendData = appletOption(R.string.upload_text) {
-        optimisticVarRefAction<String> { value, refs, _ ->
+        optimisticVarRefAction<String> { value, refs, runtime ->
             val text = value.format(*refs)
-            currentService.getSendDataListener()?.onSendData(text)
+            val data = JSONObject()
+            data.set("taskSnr",runtime.snapshot?.taskSnr)
+            data.set("data",text)
+            currentService.getSendDataListener()?.onSendData(data.toString())
         }
     }.withValueArgument<String>(R.string.msg_to_upload, VariantArgType.TEXT_FORMAT)
         .withResult<String>(R.string.uploaded_text)

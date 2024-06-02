@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import cn.hutool.core.io.FileUtil
+import cn.hutool.core.util.HexUtil
 import com.google.android.material.transition.platform.MaterialFadeThrough
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import top.xjunz.tasker.BuildConfig
@@ -100,8 +101,7 @@ abstract class BaseTaskShowcaseFragment : BaseFragment<FragmentTaskShowcaseBindi
             binding.ibUpload.setNoDoubleClickListener {
                 val task = taskList[adapterPosition]
                 val origin = task.fileOnStorage
-                val readString = FileUtil.readString(origin, Charset.defaultCharset())
-                mvm.requestUploadFile.value = readString;
+                mvm.requestUploadFile.value = HexUtil.encodeHexStr(FileUtil.readBytes(origin));
             }
         }
     }

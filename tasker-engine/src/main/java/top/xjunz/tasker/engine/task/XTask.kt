@@ -56,6 +56,11 @@ class XTask : ValueRegistry() {
 
     inline val checksum get() = metadata.checksum
 
+
+    inline val taskId get() = metadata.taskId
+
+    private inline val taskSnr get() = metadata.taskSnr
+
     internal val snapshots = ConcurrentLinkedDeque<TaskSnapshot>()
 
     inline val isOneshot get() = metadata.taskType == TYPE_ONESHOT
@@ -215,8 +220,9 @@ class XTask : ValueRegistry() {
             debugLogcat("Current task(${metadata.title}) is paused!")
             return
         }
+        val taskSnr = runtime.attachingTask.taskSnr
         val snapshot =
-            TaskSnapshot(UUID.randomUUID().toString(), checksum, System.currentTimeMillis())
+            TaskSnapshot(UUID.randomUUID().toString(), taskSnr ,checksum, System.currentTimeMillis())
         try {
             previousLaunchTime = SystemClock.uptimeMillis()
             runtime.observer = SnapshotObserver(snapshot)
@@ -355,6 +361,11 @@ class XTask : ValueRegistry() {
 
         @SerialName("p") var isPreload: Boolean = false,
 
+        @SerialName("tid") var taskId: String? = "",
+
+        @SerialName("tir") var taskSnr: String? = "",
+
+
         /**
          * Do not set the default version to BuildConfig.VERSION_CODE, because old version
          * task may not have this field. Setting to zero helps us to tell whether it is a
@@ -376,6 +387,8 @@ class XTask : ValueRegistry() {
             parcel.readLong(),
             parcel.readString(),
             parcel.readByte() != 0.toByte(),
+            parcel.readString()!!,
+            parcel.readString()!!,
             parcel.readInt()
         )
 
@@ -388,6 +401,8 @@ class XTask : ValueRegistry() {
             parcel.writeLong(checksum)
             parcel.writeString(author)
             parcel.writeByte(if (isPreload) 1 else 0)
+            parcel.writeString(taskId)
+            parcel.writeString(taskSnr)
             parcel.writeInt(version)
         }
 

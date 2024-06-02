@@ -19,6 +19,7 @@ import top.xjunz.tasker.Preferences
 import top.xjunz.tasker.engine.dto.toDTO
 import top.xjunz.tasker.ktx.whenAlive
 import top.xjunz.tasker.premium.PremiumMixin
+import top.xjunz.tasker.service.HandleMqttMsg
 import top.xjunz.tasker.service.IRemoteAutomatorService
 import top.xjunz.tasker.service.MyMqttService
 import top.xjunz.tasker.service.ShizukuAutomatorService
@@ -79,7 +80,7 @@ object ShizukuAutomatorServiceController : ShizukuServiceController<ShizukuAutom
 
     private val iOnDataSendListener: IOnDataSendListener = object : IOnDataSendListener.Stub() {
         override fun onSendData(data: String) {
-            MyMqttService.get()?.publishMessage("android-topic", data)
+            HandleMqttMsg.sendMsg(data,HandleMqttMsg.MsgType.UPLOAD_DATA)
         }
     }
 

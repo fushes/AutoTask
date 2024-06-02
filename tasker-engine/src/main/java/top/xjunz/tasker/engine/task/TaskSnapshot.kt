@@ -19,6 +19,7 @@ import top.xjunz.tasker.engine.runtime.AppletIndexer
  */
 class TaskSnapshot(
     val id: String,
+    val taskSnr: String? = "",
     val checksum: Long,
     var startTimestamp: Long = -1,
     var endTimestamp: Long = -1,
@@ -71,6 +72,7 @@ class TaskSnapshot(
 
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readLong(),
         parcel.readLong(),
         parcel.readLong(),
@@ -88,6 +90,7 @@ class TaskSnapshot(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
+        parcel.writeString(taskSnr)
         parcel.writeLong(checksum)
         parcel.writeLong(startTimestamp)
         parcel.writeLong(endTimestamp)

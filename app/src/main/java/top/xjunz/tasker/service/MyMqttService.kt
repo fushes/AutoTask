@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import cn.hutool.core.collection.CollUtil
 import cn.hutool.core.util.StrUtil
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -15,12 +16,10 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import top.xjunz.tasker.R
 import top.xjunz.tasker.annotation.Privileged
-import top.xjunz.tasker.engine.dto.toDTO
-import top.xjunz.tasker.service.controller.ShizukuAutomatorServiceController
-import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
+import top.xjunz.tasker.ktx.toast
 import top.xjunz.tasker.task.storage.MqttConfigStorage
-import top.xjunz.tasker.task.storage.TaskStorage
 import java.lang.ref.WeakReference
 
 
@@ -90,13 +89,8 @@ class MyMqttService : Service() {
             }
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
-                val allTasks = TaskStorage.getAllTasks()
                 val msg = java.lang.String(message?.payload)
-                allTasks.forEach({ item -> println(item.title + "----" + item.metadata.identifier) })
-                val get = allTasks.stream().filter({ item -> msg.equals(item.metadata.identifier) })
-                    .findFirst().get()
-                ShizukuAutomatorServiceController.remoteService?.taskManager?.addOneshotTaskIfAbsent(get.toDTO())
-                ShizukuAutomatorServiceController.remoteService?.scheduleOneshotTask(get.checksum, taskCompletionCallback)
+                HandleMqttMsg.handMsg(msg.toString())
                 Log.d("MQTT", "Received message on $topic: ${java.lang.String(message?.payload)}")
             }
 
@@ -108,14 +102,6 @@ class MyMqttService : Service() {
         }catch (e : Exception){
             Log.e("MQTT", "client mqtt err")
 
-        }
-    }
-
-
-    private val taskCompletionCallback by lazy {
-        object : ITaskCompletionCallback.Stub() {
-            override fun onTaskCompleted(isSuccessful: Boolean) {
-            }
         }
     }
 
@@ -168,10 +154,12 @@ class MyMqttService : Service() {
             mqttAndroidClient?.publish(topic, mqttMessage)?.also { token ->
                 token.actionCallback = object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
+                        toast(R.string.succeeded)
                         Log.d("MQTT", "Message published to $topic")
                     }
 
                     override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                        toast(R.string.failed)
                         Log.e("MQTT", "Failed to publish message to $topic: $exception")
                     }
                 }
