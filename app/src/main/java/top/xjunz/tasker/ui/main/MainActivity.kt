@@ -7,6 +7,7 @@ package top.xjunz.tasker.ui.main
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
+import android.database.DataSetObserver
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.ActivityResultLauncher
@@ -35,11 +36,11 @@ import top.xjunz.tasker.engine.applet.util.hierarchy
 import top.xjunz.tasker.engine.dto.XTaskDTO
 import top.xjunz.tasker.engine.task.XTask
 import top.xjunz.tasker.ktx.*
-import top.xjunz.tasker.service.MyMqttService
 import top.xjunz.tasker.premium.PremiumMixin
+import top.xjunz.tasker.service.HandleMqttMsg
+import top.xjunz.tasker.service.MyMqttService
 import top.xjunz.tasker.service.floatingInspector
 import top.xjunz.tasker.service.isPremium
-import top.xjunz.tasker.service.myMqttService
 import top.xjunz.tasker.service.serviceController
 import top.xjunz.tasker.task.applet.option.AppletOptionFactory
 import top.xjunz.tasker.task.inspector.InspectorMode
@@ -113,6 +114,18 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
 
     private lateinit var saveToSAFLauncher: ActivityResultLauncher<Intent>
 
+
+    //创建观察者
+    private val mqttObserver: DataSetObserver = object : DataSetObserver() {
+        /**
+         * 当Adapter的notifyDataSetChanged方法执行时被调用
+         */
+        override fun onChanged() {
+            viewModel.onNewTaskAdded.value = HandleMqttMsg.taskList.last()
+            super.onChanged()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val lightTheme = resources.getBoolean(R.bool.lightTheme)
@@ -148,6 +161,7 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
         val myMqttService = Intent(this@MainActivity, MyMqttService::class.java)
         startService(myMqttService)
         GlobalCrashHandler.init()
+        HandleMqttMsg.adapter.registerDataSetObserver(mqttObserver)
     }
 
     private var isExited = false
@@ -329,7 +343,7 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
         }
         //分享任务
         observeTransient(mainViewModel.requestUploadFile) {
-            myMqttService.publishMessage("android-topic/out",it)
+            HandleMqttMsg.sendMsg(it,HandleMqttMsg.MsgType.UPLOAD_TASK)
         }
         observeTransient(mainViewModel.requestImportTask) {
             handleImportTask(it)

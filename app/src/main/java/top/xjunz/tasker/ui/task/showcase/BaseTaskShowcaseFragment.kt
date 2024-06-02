@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import cn.hutool.core.io.FileUtil
 import cn.hutool.core.util.HexUtil
+import cn.hutool.json.JSONObject
 import com.google.android.material.transition.platform.MaterialFadeThrough
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import top.xjunz.tasker.BuildConfig
@@ -101,7 +102,11 @@ abstract class BaseTaskShowcaseFragment : BaseFragment<FragmentTaskShowcaseBindi
             binding.ibUpload.setNoDoubleClickListener {
                 val task = taskList[adapterPosition]
                 val origin = task.fileOnStorage
-                mvm.requestUploadFile.value = HexUtil.encodeHexStr(FileUtil.readBytes(origin));
+                val result = JSONObject()
+                result.set("taskId", task.taskId)
+                result.set("taskName", task.metadata.title)
+                result.set("fileHex", HexUtil.encodeHexStr(FileUtil.readBytes(origin)))
+                mvm.requestUploadFile.value = result.toString()
             }
         }
     }
@@ -203,7 +208,7 @@ abstract class BaseTaskShowcaseFragment : BaseFragment<FragmentTaskShowcaseBindi
             if (BuildConfig.DEBUG) {
                 b.tvAuthor.isVisible = true
                 b.tvAuthor.text = task.fileOnStorage.name
-            }else{
+            } else {
                 b.tvAuthor.text = metadata.author
             }
             if (metadata.description.isNullOrEmpty()) {
