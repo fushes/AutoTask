@@ -21,8 +21,11 @@
 #-renamesourcefileattribute SourceFile
 -dontwarn **
 -dontobfuscate
--keepattributes LineNumberTable,SourceFile
-
+-keepattributes LineNumberTable,SourceFile,Signature
+-keep class com.google.gson.** {*;}
+-keep class org.json.** {*;}
+-keep class cn.hutool.** {*;}
+-keep class org.eclipse.paho.** {*;}
 -keep class top.xjunz.tasker.Preferences{
    *;
 }

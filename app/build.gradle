@@ -8,18 +8,18 @@ plugins {
 }
 
 android {
-//    signingConfigs {
-//        "app-debug" {
-//            def localProperties = new Properties()
-//            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
-//            if (localProperties != null) {
-//                storeFile file(localProperties['storeFile'])
-//                storePassword localProperties['storePassword']
-//                keyAlias localProperties['keyAlias']
-//                keyPassword localProperties['keyPassword']
-//            }
-//        }
-//    }
+    signingConfigs {
+        xjunz {
+            def localProperties = new Properties()
+            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+            if (localProperties != null) {
+                storeFile file(localProperties['storeFile'])
+                storePassword localProperties['storePassword']
+                keyAlias localProperties['keyAlias']
+                keyPassword localProperties['keyPassword']
+            }
+        }
+    }
     compileSdk compile_sdk_version
 
     defaultConfig {
@@ -42,12 +42,12 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.m
+            signingConfig signingConfigs.xjunz
         }
         debug {
             debuggable true
             minifyEnabled false
-//            signingConfig signingConfigs.m
+            signingConfig signingConfigs.xjunz
         }
     }
     buildFeatures {
@@ -63,8 +63,6 @@ android {
     lint {
         disable 'NullSafeMutableLiveData'
     }
-    buildToolsVersion '33.0.1'
-    ndkVersion '25.1.8937393'
 }
 
 dependencies {

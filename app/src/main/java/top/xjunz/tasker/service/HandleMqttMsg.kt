@@ -131,15 +131,14 @@ class HandleMqttMsg {
                 taskId = dto.metadata.taskId
             }
             val task = dto.toXTask(AppletOptionFactory, true)
-            val count =
-                TaskStorage.getAllTasks().stream().filter { it -> it.taskId.equals(taskId) }.count()
-
+            val first =
+                TaskStorage.getAllTasks().stream().filter { it.taskId.equals(taskId) }.findFirst()
             GlobalScope.launch {
-                if (count > 0) {
+                if (first.isPresent) {
                     val currentChecksum = task.checksum
                     var removed = false
                     try {
-                        TaskStorage.removeTask(task)
+                        TaskStorage.removeTask(first.get())
                         removed = true
                     } catch (t: Throwable) {
                         t.logcatStackTrace()

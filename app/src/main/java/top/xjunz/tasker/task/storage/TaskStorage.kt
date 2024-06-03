@@ -4,6 +4,8 @@
 
 package top.xjunz.tasker.task.storage
 
+import cn.hutool.core.util.IdUtil
+import cn.hutool.core.util.StrUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -158,6 +160,9 @@ object TaskStorage {
     }
 
     suspend fun persistTask(task: XTask) {
+        if (StrUtil.isEmpty(task.taskId)) {
+            task.metadata.taskId = IdUtil.fastSimpleUUID()
+        }
         persistTask(task.toDTO(), task.isEnabled)
     }
 

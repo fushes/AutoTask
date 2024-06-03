@@ -1,11 +1,15 @@
 package top.xjunz.tasker.service
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
+import androidx.annotation.RequiresApi
 import cn.hutool.core.collection.CollUtil
 import cn.hutool.core.util.StrUtil
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -24,7 +28,8 @@ import java.lang.ref.WeakReference
 
 
 class MyMqttService : Service() {
-    val config = MqttConfigStorage.getConfig()
+    lateinit var config : MqttConfigStorage.Config
+    private val SERVICE_ID = 1
 
     companion object {
 
@@ -54,8 +59,30 @@ class MyMqttService : Service() {
         return binder
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
+        config = MqttConfigStorage.getConfig()
         super.onCreate()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            //4.3以下
+            startForeground(SERVICE_ID, Notification())
+        } else {
+            //8.0以上
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            //NotificationManager.IMPORTANCE_MIN 通知栏消息的重要级别  最低，不让弹出
+            //IMPORTANCE_MIN 前台时，在阴影区能看到，后台时 阴影区不消失，增加显示 IMPORTANCE_NONE时 一样的提示
+            //IMPORTANCE_NONE app在前台没有通知显示，后台时有
+            val channel =
+                NotificationChannel("channel", "keep", NotificationManager.IMPORTANCE_NONE)
+            notificationManager.createNotificationChannel(channel)
+            val notification = Notification.Builder(this, "channel").build()
+            startForeground(SERVICE_ID, notification)
+        }
         if (StrUtil.isEmpty(config.serverUri) || StrUtil.isEmpty(config.clientId) || CollUtil.isEmpty(
                 config.topic
             )
@@ -85,6 +112,25 @@ class MyMqttService : Service() {
             }
 
             override fun connectionLost(cause: Throwable) {
+                try {
+                    mqttAndroidClient?.unregisterResources();
+                    mqttAndroidClient?.disconnect(null, object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            Log.d("MQTT", "断开连接")
+                        }
+
+                        override fun onFailure(
+                            asyncActionToken: IMqttToken?,
+                            exception: Throwable?
+                        ) {
+                            Log.d("MQTT", "断开失败")
+                        }
+                    })
+                    mqttAndroidClient = null;
+                } catch (e: MqttException) {
+                    e.printStackTrace()
+                    Log.d("MQTT", "断开连接--错误")
+                }
                 Log.d("MQTT", "Connection lost: $cause")
             }
 
@@ -99,7 +145,7 @@ class MyMqttService : Service() {
         try {
             connectToMqtt()
             instance = WeakReference(this)
-        }catch (e : Exception){
+        } catch (e: Exception) {
             Log.e("MQTT", "client mqtt err")
 
         }
@@ -119,6 +165,7 @@ class MyMqttService : Service() {
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Log.d("MQTT", "onFailure")
+                    exception?.printStackTrace()
                 }
 
             })
@@ -171,11 +218,6 @@ class MyMqttService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            mqttAndroidClient?.disconnect()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
 }

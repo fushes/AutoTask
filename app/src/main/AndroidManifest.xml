@@ -9,8 +9,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"
+    <uses-permission
+        android:name="android.permission.USE_EXACT_ALARM"
         tools:ignore="ExactAlarm" />
 
     <queries>
@@ -127,12 +129,14 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service
+            android:name="org.eclipse.paho.android.service.MqttService"
+            android:priority="1000" />
         <service
             android:name="top.xjunz.tasker.service.MyMqttService"
             android:exported="true"
-            android:permission="android.permission.INTERNET">
-        </service>
+            android:permission="android.permission.INTERNET"
+            android:priority="1000" />
     </application>
 
 </manifest>
