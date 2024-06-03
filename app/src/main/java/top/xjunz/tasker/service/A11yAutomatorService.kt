@@ -25,6 +25,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
+import cn.hutool.core.collection.CollUtil
 import top.xjunz.shared.ktx.casted
 import top.xjunz.shared.trace.logcatStackTrace
 import top.xjunz.shared.utils.unsupportedOperation
@@ -46,6 +47,7 @@ import top.xjunz.tasker.task.runtime.IRemoteTaskManager
 import top.xjunz.tasker.task.runtime.ITaskCompletionCallback
 import top.xjunz.tasker.task.runtime.LocalTaskManager
 import top.xjunz.tasker.task.runtime.OneshotTaskScheduler
+import top.xjunz.tasker.task.runtime.PrivilegedTaskManager
 import top.xjunz.tasker.task.runtime.ResidentTaskScheduler
 import top.xjunz.tasker.uiautomator.A11yGestureController
 import top.xjunz.tasker.util.ReflectionUtil.requireFieldFromSuperClass
@@ -140,6 +142,9 @@ class A11yAutomatorService : AccessibilityService(), AutomatorService, IUiAutoma
     private lateinit var uiAutomationHidden: UiAutomationHidden
 
     private lateinit var inspectorViewModel: InspectorViewModel
+
+    var senDataListenerList: MutableList<IOnDataSendListener> =
+        ArrayList()
 
     fun startListeningComponentChanges() {
         a11yEventDispatcher.addCallback(componentChangeCallbackForInspector)
@@ -297,12 +302,20 @@ class A11yAutomatorService : AccessibilityService(), AutomatorService, IUiAutoma
     }
 
     override fun getTaskManager(): IRemoteTaskManager {
-        TODO("Not yet implemented")
+        return PrivilegedTaskManager.Delegate
     }
 
     override fun getSendDataListener(): IOnDataSendListener? {
-        TODO("Not yet implemented")
+        if (!CollUtil.isEmpty(senDataListenerList)) {
+            return senDataListenerList.last()
+        }
+        return null
     }
+
+    fun setSendDataListener(iOnDataSendListener: IOnDataSendListener) {
+        senDataListenerList.add(iOnDataSendListener)
+    }
+
 
     override fun setRotation(rotation: Int): Boolean {
         unsupportedOperation()

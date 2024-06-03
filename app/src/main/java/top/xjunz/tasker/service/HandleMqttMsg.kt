@@ -72,6 +72,7 @@ class HandleMqttMsg {
         }
 
         fun handMsg(data: String) {
+            Log.e(TAG, "msg : $data")
             var jsonObject: JSONObject? = null
             try {
                 jsonObject = JSONObject(data)
@@ -105,14 +106,18 @@ class HandleMqttMsg {
                 )
                 return
             }
-            var task = get.get()
+            val task = get.get()
             task.metadata.taskSnr = taskSnr
             taskCompletionCallback.setSnr(taskSnr)
-            ShizukuAutomatorServiceController.remoteService?.taskManager?.addOneshotTaskIfAbsent(
+            currentService.getTaskManager().addOneshotTaskIfAbsent(
                 task.toDTO()
             )
-            ShizukuAutomatorServiceController.remoteService?.scheduleOneshotTask(
+            currentService.getTaskManager().updateTask(
                 task.checksum,
+                task.toDTO()
+            )
+            currentService.scheduleOneshotTask(
+                task,
                 taskCompletionCallback
             )
         }
@@ -172,7 +177,6 @@ class HandleMqttMsg {
 
         private val taskCompletionCallback by lazy {
             var snr = ""
-
             object : ITaskCompletionCallback.Stub() {
                 override fun onTaskCompleted(isSuccessful: Boolean) {
                     myMqttService.publishMessage(

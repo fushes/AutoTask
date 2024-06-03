@@ -7,10 +7,10 @@ package top.xjunz.tasker.task.storage
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import cn.hutool.core.collection.CollUtil
 import cn.hutool.core.io.FileUtil
 import cn.hutool.json.JSONObject
-import com.google.gson.Gson
 import top.xjunz.tasker.app
 import java.io.File
 import java.nio.charset.Charset
@@ -33,10 +33,13 @@ class MqttConfigStorage {
         private const val configName: String = "mqtt.conf";
         private val configPath: String = storageDir.path + File.separator + configName
         fun setConfig(conf: Config) {
-            val gson = Gson()
-            val str: String = gson.toJson(conf) // obj 代表各种数据类型
-            val json = JSONObject(str);
+            val json = JSONObject();
+            json["serverUri"] = conf.serverUri
+            json["userName"] = conf.userName
+            json["password"] = conf.password
+            json["clientId"] = conf.clientId
             json["topic"] = CollUtil.join(conf.topic, ",")
+            Log.i("MQTT","path:$configPath, data:${json.toString()}")
             FileUtil.writeString(
                 json.toString(),
                 configPath,
@@ -62,7 +65,7 @@ class MqttConfigStorage {
 
         fun init(applicationContext: Context) {
             val config = Config()
-            config.serverUri = "tcp://192.168.1.112:8082"
+            config.serverUri = "tcp://43.138.157.155:8082"
             config.clientId =
                 Build.BRAND + "_" + Build.DEVICE + "_" + getDeviceName(applicationContext);
             config.topic =
@@ -73,7 +76,8 @@ class MqttConfigStorage {
         }
 
         fun getDeviceName(context: Context): String {
-            val deviceName = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+            val deviceName =
+                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
             return deviceName
         }
     }

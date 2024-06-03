@@ -14,6 +14,8 @@ import top.xjunz.tasker.ktx.toast
 import top.xjunz.tasker.service.A11yAutomatorService
 import top.xjunz.tasker.service.A11yAutomatorService.Companion.LAUNCH_ERROR
 import top.xjunz.tasker.service.A11yAutomatorService.Companion.RUNNING_STATE
+import top.xjunz.tasker.service.HandleMqttMsg
+import top.xjunz.tasker.task.runtime.IOnDataSendListener
 
 /**
  * @author xjunz 2022/07/23
@@ -41,6 +43,13 @@ object A11yAutomatorServiceController : ServiceController<A11yAutomatorService>(
         if (app.launchIntentSafely(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))) {
             A11yAutomatorService.FLAG_REQUEST_INSPECTOR_MODE = false
             toast(R.string.pls_start_a11y_service_manually)
+        }
+    }
+
+
+    private val iOnDataSendListener: IOnDataSendListener = object : IOnDataSendListener.Stub() {
+        override fun onSendData(data: String) {
+            HandleMqttMsg.sendMsg(data,HandleMqttMsg.MsgType.UPLOAD_DATA)
         }
     }
 
@@ -73,6 +82,7 @@ object A11yAutomatorServiceController : ServiceController<A11yAutomatorService>(
             A11yAutomatorService.FLAG_REQUEST_INSPECTOR_MODE = true
         }
         RUNNING_STATE.value = service != null
+        service?.setSendDataListener(iOnDataSendListener)
     }
 
     override val isServiceRunning: Boolean get() = service?.isRunning == true

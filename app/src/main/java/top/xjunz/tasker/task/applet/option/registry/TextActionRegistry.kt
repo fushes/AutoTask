@@ -78,8 +78,8 @@ class TextActionRegistry(id: Int) : AppletOptionRegistry(id) {
         optimisticVarRefAction<String> { value, refs, runtime ->
             val text = value.format(*refs)
             val data = JSONObject()
-            data.set("taskSnr",runtime.snapshot?.taskSnr)
-            data.set("data",text)
+            data.set("taskSnr", runtime.attachingTask.taskSnr)
+            data.set("data", text)
             currentService.getSendDataListener()?.onSendData(data.toString())
         }
     }.withValueArgument<String>(R.string.msg_to_upload, VariantArgType.TEXT_FORMAT)

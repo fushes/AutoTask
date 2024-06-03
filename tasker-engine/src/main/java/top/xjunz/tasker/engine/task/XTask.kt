@@ -59,7 +59,7 @@ class XTask : ValueRegistry() {
 
     inline val taskId get() = metadata.taskId
 
-    private inline val taskSnr get() = metadata.taskSnr
+    inline val taskSnr get() = metadata.taskSnr
 
     internal val snapshots = ConcurrentLinkedDeque<TaskSnapshot>()
 
@@ -220,7 +220,6 @@ class XTask : ValueRegistry() {
             debugLogcat("Current task(${metadata.title}) is paused!")
             return
         }
-        val taskSnr = runtime.attachingTask.taskSnr
         val snapshot =
             TaskSnapshot(UUID.randomUUID().toString(), taskSnr ,checksum, System.currentTimeMillis())
         try {
