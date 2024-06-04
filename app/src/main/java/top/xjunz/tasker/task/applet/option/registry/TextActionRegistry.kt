@@ -78,7 +78,7 @@ class TextActionRegistry(id: Int) : AppletOptionRegistry(id) {
         optimisticVarRefAction<String> { value, refs, runtime ->
             val text = value.format(*refs)
             val data = JSONObject()
-            data.set("taskSnr", runtime.attachingTask.taskSnr)
+            data.set("taskSnr", runtime.attachingTask.metadata.taskSnr)
             data.set("data", text)
             currentService.getSendDataListener()?.onSendData(data.toString())
         }

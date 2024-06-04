@@ -343,7 +343,8 @@ class MainActivity : AppCompatActivity(), DialogStackManager.Callback {
         }
         //分享任务
         observeTransient(mainViewModel.requestUploadFile) {
-            HandleMqttMsg.sendMsg(it,HandleMqttMsg.MsgType.UPLOAD_TASK)
+            val requestData = HandleMqttMsg.RequestData(null, it, HandleMqttMsg.MsgType.UPLOAD_TASK)
+            HandleMqttMsg.sendMsg(requestData)
         }
         observeTransient(mainViewModel.requestImportTask) {
             handleImportTask(it)

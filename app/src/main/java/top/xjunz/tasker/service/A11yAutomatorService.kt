@@ -143,9 +143,6 @@ class A11yAutomatorService : AccessibilityService(), AutomatorService, IUiAutoma
 
     private lateinit var inspectorViewModel: InspectorViewModel
 
-    var senDataListenerList: MutableList<IOnDataSendListener> =
-        ArrayList()
-
     fun startListeningComponentChanges() {
         a11yEventDispatcher.addCallback(componentChangeCallbackForInspector)
     }
@@ -272,6 +269,7 @@ class A11yAutomatorService : AccessibilityService(), AutomatorService, IUiAutoma
             uiAutomationHidden.disconnect()
         }
         instance?.clear()
+        PrivilegedTaskManager.Delegate.senDataListenerList.clear()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
@@ -306,14 +304,10 @@ class A11yAutomatorService : AccessibilityService(), AutomatorService, IUiAutoma
     }
 
     override fun getSendDataListener(): IOnDataSendListener? {
-        if (!CollUtil.isEmpty(senDataListenerList)) {
-            return senDataListenerList.last()
+        if (!CollUtil.isEmpty(PrivilegedTaskManager.Delegate.senDataListenerList)) {
+            return PrivilegedTaskManager.Delegate.senDataListenerList.last()
         }
         return null
-    }
-
-    fun setSendDataListener(iOnDataSendListener: IOnDataSendListener) {
-        senDataListenerList.add(iOnDataSendListener)
     }
 
 
@@ -354,6 +348,10 @@ class A11yAutomatorService : AccessibilityService(), AutomatorService, IUiAutoma
             RUNNING_STATE.value = false
             lifecycleRegistry.removeObserver(this)
         }
+    }
+
+    fun setSendDataListener(iOnDataSendListener: IOnDataSendListener) {
+        PrivilegedTaskManager.Delegate.senDataListenerList.add(iOnDataSendListener)
     }
 
     override val lifecycle: Lifecycle get() = lifecycleRegistry

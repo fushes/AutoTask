@@ -4,6 +4,7 @@
 
 package top.xjunz.tasker.task.storage
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
@@ -25,6 +26,7 @@ class MqttConfigStorage {
         var topic: HashSet<String>? = null
         var userName: String = ""
         var password: String = ""
+        var out: String = ""
     }
 
     companion object {
@@ -39,7 +41,7 @@ class MqttConfigStorage {
             json["password"] = conf.password
             json["clientId"] = conf.clientId
             json["topic"] = CollUtil.join(conf.topic, ",")
-            Log.i("MQTT","path:$configPath, data:${json.toString()}")
+            Log.i("MQTT", "path:$configPath, data:${json}")
             FileUtil.writeString(
                 json.toString(),
                 configPath,
@@ -48,7 +50,9 @@ class MqttConfigStorage {
         }
 
         fun getConfig(): Config {
-            init(app)
+            if (!FileUtil.exist(configPath)) {
+                init(app)
+            }
             val str: String = FileUtil.readString(
                 configPath,
                 Charset.defaultCharset()
@@ -60,21 +64,27 @@ class MqttConfigStorage {
             config.topic = CollUtil.newHashSet(jsonObject["topic"].toString().split(","))
             config.userName = jsonObject["userName"].toString()
             config.password = jsonObject["password"].toString()
+            config.out = "android-topic/${config.clientId}/out"
             return config
         }
 
         fun init(applicationContext: Context) {
             val config = Config()
-            config.serverUri = "tcp://43.138.157.155:8082"
+            config.serverUri = "tcp://127.0.0.1:8082"
             config.clientId =
                 Build.BRAND + "_" + Build.DEVICE + "_" + getDeviceName(applicationContext);
-            config.topic =
-                CollUtil.newHashSet("android-topic/${config.clientId}", "android-topic/common")
+
+            config.topic = getDefaultTopics(config.clientId)
             config.userName = "mqtt"
             config.password = "2e51bf05564158d7eff6d5f0b9fcbb5f";
             setConfig(config)
         }
 
+        fun getDefaultTopics(clientId: String): HashSet<String> {
+            return CollUtil.newHashSet("android-topic/${clientId}", "android-topic/common")
+        }
+
+        @SuppressLint("HardwareIds")
         fun getDeviceName(context: Context): String {
             val deviceName =
                 Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)

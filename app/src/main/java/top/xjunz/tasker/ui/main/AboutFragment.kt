@@ -252,6 +252,8 @@ class AboutFragment : BaseFragment<FragmentAboutBinding>(), ScrollTarget,
                     )
                 )
             }
+
+            MainOption.Setting -> SettingDialog().show(childFragmentManager)
         }
     }
 

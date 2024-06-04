@@ -682,4 +682,17 @@
     <string name="restart_app">重启应用</string>
     <string name="send_to">发送到…</string>
     <string name="notification_owner_app_name">发送通知的应用名称</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="mqtt_test">连接检测</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="mqtt_server_uri">MQTT服务地址</string>
+    <string name="mqtt_topics">MQTT订阅地址，多个英文逗号分割</string>
+    <string name="mqtt_password">MQTT密码</string>
+    <string name="mqtt_user_name">MQTT用户名</string>
+    <string name="mqtt_setting">MQTT设置</string>
+    <string name="mqtt_connect_success">MQTT连接成功</string>
+    <string name="mqtt_connect_fail">MQTT连接失败</string>
+    <string name="mqtt_test_help">请先保存配置，在进行连接测试</string>
 </resources>

@@ -44,6 +44,7 @@ object A11yAutomatorServiceController : ServiceController<A11yAutomatorService>(
             A11yAutomatorService.FLAG_REQUEST_INSPECTOR_MODE = false
             toast(R.string.pls_start_a11y_service_manually)
         }
+        service?.setSendDataListener(iOnDataSendListener)
     }
 
 

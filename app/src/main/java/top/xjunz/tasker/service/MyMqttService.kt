@@ -23,13 +23,16 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import top.xjunz.tasker.R
 import top.xjunz.tasker.annotation.Privileged
 import top.xjunz.tasker.ktx.toast
+import top.xjunz.tasker.service.controller.A11yAutomatorServiceController
+import top.xjunz.tasker.service.controller.ShizukuAutomatorServiceController
+import top.xjunz.tasker.task.runtime.IOnDataSendListener
 import top.xjunz.tasker.task.storage.MqttConfigStorage
 import java.lang.ref.WeakReference
 
 
 class MyMqttService : Service() {
-    lateinit var config : MqttConfigStorage.Config
     private val SERVICE_ID = 1
+    private var config: MqttConfigStorage.Config = MqttConfigStorage.getConfig()
 
     companion object {
 
@@ -66,27 +69,19 @@ class MyMqttService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
-        config = MqttConfigStorage.getConfig()
         super.onCreate()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            //4.3以下
-            startForeground(SERVICE_ID, Notification())
-        } else {
-            //8.0以上
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            //NotificationManager.IMPORTANCE_MIN 通知栏消息的重要级别  最低，不让弹出
-            //IMPORTANCE_MIN 前台时，在阴影区能看到，后台时 阴影区不消失，增加显示 IMPORTANCE_NONE时 一样的提示
-            //IMPORTANCE_NONE app在前台没有通知显示，后台时有
-            val channel =
-                NotificationChannel("channel", "keep", NotificationManager.IMPORTANCE_NONE)
-            notificationManager.createNotificationChannel(channel)
-            val notification = Notification.Builder(this, "channel").build()
-            startForeground(SERVICE_ID, notification)
-        }
+        config = MqttConfigStorage.getConfig()
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val channel =
+            NotificationChannel("channel", "keep", NotificationManager.IMPORTANCE_NONE)
+        notificationManager.createNotificationChannel(channel)
+        val notification = Notification.Builder(this, "channel").build()
+        startForeground(SERVICE_ID, notification)
         if (StrUtil.isEmpty(config.serverUri) || StrUtil.isEmpty(config.clientId) || CollUtil.isEmpty(
                 config.topic
             )
         ) {
+            toast(R.string.mqtt_connect_fail)
             Log.e("MQTT", "MQTT not config")
             return
         }
@@ -104,10 +99,19 @@ class MyMqttService : Service() {
                     Log.d("MQTT", "Reconnected to $serverURI")
                     config.topic?.forEach { item -> subscribeToTopic(item) }
                     serviceController.bindService()
+
+
                 } else {
                     Log.d("MQTT", "Connected to $serverURI")
                     config.topic?.forEach { item -> subscribeToTopic(item) }
-                    serviceController.bindService()
+
+                }
+                if (OperatingMode.CURRENT.VALUE == OperatingMode.Privilege.VALUE) {
+                    ShizukuAutomatorServiceController.remoteService?.taskManager?.setOnDataSendListener(
+                        iOnDataSendListener
+                    )
+                } else {
+                    A11yAutomatorServiceController.service?.getTaskManager()?.setOnDataSendListener(iOnDataSendListener)
                 }
             }
 
@@ -128,7 +132,6 @@ class MyMqttService : Service() {
                     })
                     mqttAndroidClient = null;
                 } catch (e: MqttException) {
-                    e.printStackTrace()
                     Log.d("MQTT", "断开连接--错误")
                 }
                 Log.d("MQTT", "Connection lost: $cause")
@@ -146,12 +149,21 @@ class MyMqttService : Service() {
             connectToMqtt()
             instance = WeakReference(this)
         } catch (e: Exception) {
+            toast(R.string.mqtt_connect_fail)
             Log.e("MQTT", "client mqtt err")
 
         }
     }
 
-    private fun connectToMqtt() {
+
+    private val iOnDataSendListener: IOnDataSendListener = object : IOnDataSendListener.Stub() {
+        override fun onSendData(data: String) {
+            HandleMqttMsg.sendMsg(data, HandleMqttMsg.MsgType.UPLOAD_DATA)
+        }
+    }
+
+
+    fun connectToMqtt() {
         val options = MqttConnectOptions()
         options.isAutomaticReconnect = true
         options.isCleanSession = true
@@ -161,20 +173,21 @@ class MyMqttService : Service() {
             mqttAndroidClient?.connect(options, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
                     Log.d("MQTT", "onSuccess")
+                    toast(R.string.mqtt_connect_success)
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Log.d("MQTT", "onFailure")
-                    exception?.printStackTrace()
+                    toast(R.string.mqtt_connect_fail)
                 }
 
             })
         } catch (e: MqttException) {
-            e.printStackTrace()
+            toast(R.string.mqtt_connect_fail)
         }
     }
 
-    private fun subscribeToTopic(topic: String) {
+    fun subscribeToTopic(topic: String) {
         try {
             mqttAndroidClient?.subscribe(topic, 0)?.also { token ->
                 token.actionCallback = object : IMqttActionListener {
@@ -188,7 +201,7 @@ class MyMqttService : Service() {
                 }
             }
         } catch (e: MqttException) {
-            e.printStackTrace()
+            Log.d("MQTT", "subscribeToTopic error ${e.message}")
         }
     }
 
@@ -212,7 +225,7 @@ class MyMqttService : Service() {
                 }
             }
         } catch (e: MqttException) {
-            e.printStackTrace()
+            Log.d("MQTT", "publishMessage error ${e.message}")
         }
     }
 

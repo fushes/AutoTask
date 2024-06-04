@@ -32,6 +32,9 @@ sealed class MainOption(
         }
     })
 
+    object Setting :
+        MainOption(R.string.mqtt_setting, R.drawable.baseline_setting_24)
+
     object ExportTasks :
         MainOption(R.string.export_all_tasks, R.drawable.baseline_backup_24)
 
@@ -84,9 +87,9 @@ sealed class MainOption(
 
     companion object {
         val ALL_OPTIONS = if (upForGrabs) {
-            arrayOf(ExportTasks, AutoStart, WakeLock, NightMode, Feedback, VersionInfo, About)
+            arrayOf(Setting,ExportTasks, AutoStart, WakeLock, NightMode, Feedback, VersionInfo, About)
         } else {
-            arrayOf(PremiumStatus, ExportTasks, AutoStart, NightMode, Feedback, VersionInfo, About)
+            arrayOf(Setting,PremiumStatus, ExportTasks, AutoStart, NightMode, Feedback, VersionInfo, About)
         }
     }
 }
