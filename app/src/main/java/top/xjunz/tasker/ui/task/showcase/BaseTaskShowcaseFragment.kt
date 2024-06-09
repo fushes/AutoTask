@@ -105,6 +105,7 @@ abstract class BaseTaskShowcaseFragment : BaseFragment<FragmentTaskShowcaseBindi
                 val result = JSONObject()
                 result.set("taskId", task.taskId)
                 result.set("taskName", task.metadata.title)
+                result.set("description", task.metadata.description)
                 result.set("fileHex", HexUtil.encodeHexStr(FileUtil.readBytes(origin)))
                 mvm.requestUploadFile.value = result.toString()
             }

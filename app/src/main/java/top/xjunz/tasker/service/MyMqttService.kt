@@ -98,9 +98,6 @@ class MyMqttService : Service() {
                 if (reconnect) {
                     Log.d("MQTT", "Reconnected to $serverURI")
                     config.topic?.forEach { item -> subscribeToTopic(item) }
-                    serviceController.bindService()
-
-
                 } else {
                     Log.d("MQTT", "Connected to $serverURI")
                     config.topic?.forEach { item -> subscribeToTopic(item) }
@@ -115,27 +112,30 @@ class MyMqttService : Service() {
                 }
             }
 
-            override fun connectionLost(cause: Throwable) {
-                try {
-                    mqttAndroidClient?.unregisterResources();
-                    mqttAndroidClient?.disconnect(null, object : IMqttActionListener {
-                        override fun onSuccess(asyncActionToken: IMqttToken?) {
-                            Log.d("MQTT", "断开连接")
-                        }
-
-                        override fun onFailure(
-                            asyncActionToken: IMqttToken?,
-                            exception: Throwable?
-                        ) {
-                            Log.d("MQTT", "断开失败")
-                        }
-                    })
-                    mqttAndroidClient = null;
-                } catch (e: MqttException) {
-                    Log.d("MQTT", "断开连接--错误")
-                }
-                Log.d("MQTT", "Connection lost: $cause")
+            override fun connectionLost(cause: Throwable?) {
+                return
             }
+//
+//            override fun connectionLost(cause: Throwable) {
+//                try {
+//                    mqttAndroidClient?.unregisterResources();
+//                    mqttAndroidClient?.disconnect(null, object : IMqttActionListener {
+//                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+//                            Log.d("MQTT", "断开连接")
+//                        }
+//
+//                        override fun onFailure(
+//                            asyncActionToken: IMqttToken?,
+//                            exception: Throwable?
+//                        ) {
+//                            Log.d("MQTT", "断开失败")
+//                        }
+//                    })
+//                } catch (e: MqttException) {
+//                    Log.d("MQTT", "断开连接--错误")
+//                }
+//                Log.d("MQTT", "Connection lost: $cause")
+//            }
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 val msg = java.lang.String(message?.payload)
