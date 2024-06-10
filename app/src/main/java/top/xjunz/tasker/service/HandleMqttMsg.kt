@@ -183,7 +183,7 @@ class HandleMqttMsg {
 
     class ResultData(var taskSnr: String, var isSuccessful: Boolean, var type: MsgType) {
         override fun toString(): String {
-            return "{'snr':'$taskSnr', 'data':$isSuccessful,'type':${type.type}}"
+            return "{\"snr\":\"$taskSnr\", \"data\":$isSuccessful,\"type\":${type.type}}"
         }
     }
 
@@ -192,7 +192,7 @@ class HandleMqttMsg {
             if (StrUtil.isEmpty(taskSnr)) {
                 taskSnr = IdUtil.fastSimpleUUID()
             }
-            return "{'taskSnr':'$taskSnr', 'data':$data,'type':${type?.type}}"
+            return "{\"taskSnr\":\"$taskSnr\", \"data\":$data,\"type\":${type?.type}}"
         }
 
     }
