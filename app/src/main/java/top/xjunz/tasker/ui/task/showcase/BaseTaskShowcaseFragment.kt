@@ -107,7 +107,7 @@ abstract class BaseTaskShowcaseFragment : BaseFragment<FragmentTaskShowcaseBindi
                 result.set("taskName", task.metadata.title)
                 result.set("description", task.metadata.description)
                 result.set("fileHex", HexUtil.encodeHexStr(FileUtil.readBytes(origin)))
-                mvm.requestUploadFile.value = result.toString()
+                mvm.requestUploadFile.value = result.toString().replace("\"","\\\"")
             }
         }
     }
