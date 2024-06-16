@@ -38,7 +38,7 @@
 - 增加获取所有子组件文本
 - 增加文本上传
   
-| [<img src="pulbic-static-file/blob/master/auto-task/get-child-text.png" alt="pic_main" style="zoom:25%;" /> ]| [<img src="/app/screenshots/Screenshot_light_2.png" alt="pic_test" style="zoom:25%;" /> ](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png)| [<img src="/app/screenshots/Screenshot_night_1.png" style="zoom:25%;" /> ](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png)| [<img src="/app/screenshots/Screenshot_night_2.png" style="zoom:25%;" />](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png) |
+| [<img src="https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/mqtt-config.png" alt="pic_main" style="zoom:25%;" /> ]| [<img src="https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/upload.png" alt="pic_test" style="zoom:25%;" /> ]| [<img src="https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/mqtt-config.png" style="zoom:25%;" /> ]| [<img src="/https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/upload-text.png" style="zoom:25%;" />]|
 |----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------|
 
 ## 构建
