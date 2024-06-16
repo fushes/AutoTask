@@ -41,7 +41,11 @@
 | ![](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/mqtt-config.png) | ![](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/upload.png) | ![](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png) | ![](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/upload-text.png) |
 | :----------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 
-### 
+通过上传文本将获取到的文本上传到后台服务
+
+搭配后台服务m-admin使用，MQTT用户名和密码为m-admin中配置的用户名和密码
+
+[m-admin](https://github.com/maju-blogs/m-admin)
 
 
 
