@@ -31,6 +31,16 @@
 
 使用辅助功能自带的API框架用于实现任务执行，详见[A11yAutomatorService](https://github.com/xjunz/AutoTask/blob/master/app/src/main/java/top/xjunz/tasker/service/A11yAutomatorService.kt)。
 
+## MQTT
+
+- 增加MQTT配置
+- 增加任务上传到后台
+- 增加获取所有子组件文本
+- 增加文本上传
+  
+| [<img src="/app/screenshots/Screenshot_light_1.png" alt="pic_main" style="zoom:25%;" /> ](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png)| [<img src="/app/screenshots/Screenshot_light_2.png" alt="pic_test" style="zoom:25%;" /> ](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png)| [<img src="/app/screenshots/Screenshot_night_1.png" style="zoom:25%;" /> ](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png)| [<img src="/app/screenshots/Screenshot_night_2.png" style="zoom:25%;" />](https://github.com/maju-blogs/pulbic-static-file/blob/master/auto-task/get-child-text.png) |
+|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------|
+
 ## 构建
 
 如果你想构建此项目，请将代码`git clone`到本地后，在**Android Studio**打开，并在项目根目录下建立`local.properties`(如果不存在的话)，在其中配置自定义签名信息:
