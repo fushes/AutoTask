@@ -47,6 +47,8 @@
 
 [m-admin](https://github.com/maju-blogs/m-admin)
 
+[mqtt版本apk下载](https://github.com/maju-blogs/AutoTask/releases/download/v1.0.0/auto-task-mqtt.apk)
+
 
 
 ## 构建
