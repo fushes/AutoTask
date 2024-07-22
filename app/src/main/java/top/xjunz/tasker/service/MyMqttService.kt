@@ -169,6 +169,7 @@ class MyMqttService : Service() {
         options.isCleanSession = true
         options.userName = config.userName
         options.password = config.password.toCharArray();
+        options.keepAliveInterval = 20
         try {
             mqttAndroidClient?.connect(options, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
